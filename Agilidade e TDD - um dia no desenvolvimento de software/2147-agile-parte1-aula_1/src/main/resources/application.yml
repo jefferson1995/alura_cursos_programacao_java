@@ -1,0 +1,3 @@
+spring:
+  profiles:
+    active: test  # Pode ser 'prod', 'dev', ou 'test'
