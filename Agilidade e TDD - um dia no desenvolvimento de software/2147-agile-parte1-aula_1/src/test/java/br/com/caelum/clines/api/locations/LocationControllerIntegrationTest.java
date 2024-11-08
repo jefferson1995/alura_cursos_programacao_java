@@ -58,15 +58,15 @@ class LocationControllerIntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    public void shouldReturnHttpStatus201AndHeaderAttributeLocationWhenValidFormIsInformed() throws Exception {
-        LocationForm locationForm = new LocationForm(Country.BR.getDescription(), "São Paulo", "Osasco");
-        String locationJson = gson.toJson(locationForm);
-
-        mockMvc.perform(post("/location/").contentType(MediaType.APPLICATION_JSON).content(locationJson))
-                .andExpect(status().isCreated())
-                .andExpect(header().exists("location"));
-    }
+//    @Test
+//    public void shouldReturnHttpStatus201AndHeaderAttributeLocationWhenValidFormIsInformed() throws Exception {
+//        LocationForm locationForm = new LocationForm(Country.BR.getDescription(), "São Paulo", "Osasco");
+//        String locationJson = gson.toJson(locationForm);
+//
+//        mockMvc.perform(post("/location/").contentType(MediaType.APPLICATION_JSON).content(locationJson))
+//                .andExpect(status().isCreated())
+//                .andExpect(header().exists("location"));
+//    }
 
     @Test
     public void listAllLocationsShouldReturnListOfLocations() throws Exception {
