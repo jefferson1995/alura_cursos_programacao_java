@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:latest  # Usa a imagem mais recente do PostgreSQL.
+    env_file: env/postgres.env  # Carrega as variáveis de ambiente do arquivo `postgres.env` para configurar o banco.
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data  # Monta o volume local `postgres-data` para persistir os dados do PostgreSQL no diretório de dados padrão do Postgres, evitando perda de dados após reinicializações.
+      - ./data.sql:/docker-entrypoint-initdb.d/data.sql  # Monta o script SQL `data.sql` na pasta `docker-entrypoint-initdb.d`, que é executado automaticamente ao iniciar o container pela primeira vez para inicializar o banco com dados.
+    restart: unless-stopped  # Reinicia automaticamente o container a menos que seja explicitamente parado.
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "$POSTGRES_USER"]  # Comando para verificar a saúde do container do banco, usando o utilitário `pg_isready` com o usuário definido em `POSTGRES_USER`.
+      interval: 5s  # Define o intervalo entre as verificações de saúde como 5 segundos.
+      timeout: 5s  # Define o tempo limite para cada tentativa de verificação de saúde como 5 segundos.
+      retries: 10  # Especifica que o container tentará 10 vezes antes de ser considerado inativo.
+
+  app:
+    image: alura/user-infra:1.0
+    container_name: "user-infra-app"  # Define o nome do container como `user-infra-app`.
+    env_file: ./env/app.env  # Carrega as variáveis de ambiente do arquivo `app.env` para configurar a aplicação.
+    restart: unless-stopped  # Reinicia automaticamente o container da aplicação a menos que seja explicitamente parado.
+    depends_on:
+      db:
+        condition: service_healthy  # Define uma dependência com o serviço `db` (PostgreSQL), garantindo que ele esteja saudável antes de iniciar o container da aplicação.
+    ports:
+      - "8087:8087"  # Mapeia a porta `8087` do host para a porta `8087` do container, permitindo o acesso à aplicação externamente.
+
+volumes:
+  postgres-data:  # Define um volume nomeado `postgres-data`, garantindo que os dados do banco sejam persistentes.
