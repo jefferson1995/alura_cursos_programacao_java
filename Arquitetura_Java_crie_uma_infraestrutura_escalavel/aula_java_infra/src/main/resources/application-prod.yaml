@@ -4,16 +4,35 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     initialize: true
-    platform: postgres
+    hikari:
+      minimum-idle: 15  # Define o número mínimo de conexões inativas (ociosas) que o pool deve manter.
+      maximum-pool-size: 40  # Define o número máximo de conexões que o pool pode criar e manter.
+      connection-timeout: 10000  # Define o tempo máximo (em milissegundos) que o pool vai esperar para obter uma conexão antes de lançar uma exceção de timeout.
+      idle-timeout: 600000  # Define o tempo máximo (em milissegundos) que uma conexão pode ficar ociosa no pool antes de ser fechada.
+      max-lifetime: 1800000  # Define o tempo máximo (em milissegundos) que uma conexão pode viver no pool. Após esse tempo, a conexão será fechada e removida do pool.
+  sql:
+    init:
+      platform: postgres  # Define o banco de dados de inicialização como PostgreSQL. Isso provavelmente indica que a aplicação deve usar um banco PostgreSQL, e o sistema pode configurar ou preparar esse banco durante a inicialização.
+
   jpa:
     hibernate:
-      ddl-auto: update
-      dialect: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: update  # Configura o comportamento do Hibernate para a atualização do esquema do banco de dados. Com `update`, o Hibernate tenta automaticamente ajustar o esquema do banco para corresponder às entidades do Java (criando, alterando ou removendo tabelas e colunas, conforme necessário).
+      dialect: org.hibernate.dialect.PostgreSQLDialect  # Define o dialeto do Hibernate para PostgreSQL, garantindo que o Hibernate use as sintaxes e otimizações específicas para esse banco de dados.
       jdbc:
-        lob.non-contextual-creation: true
+        lob.non-contextual-creation: true  # Permite a criação de objetos LOB (Large Object, como `BLOB` e `CLOB`) sem um contexto de transação, permitindo um uso mais flexível dos tipos de dados grandes no banco de dados.
+
     properties:
       hibernate:
-        show_sql: true
+        show_sql: true  # Ativa a exibição de SQL gerado pelo Hibernate no log de saída. Isso pode ser útil para depuração ou verificação de consultas geradas automaticamente.
+        format_sql: true  # Formata o SQL gerado pelo Hibernate, facilitando a leitura dos logs, especialmente quando as consultas são complexas ou longas.
+
   output:
     ansi:
-      enabled: always
+      enabled: always  # Habilita a saída ANSI em todos os casos, o que pode se referir a formatos de texto coloridos ou estilos especiais no terminal (por exemplo, para destacar erros ou mensagens importantes).
+
+  data:
+    redis:
+      port: 6379  # Define a porta do servidor Redis. O Redis, por padrão, usa a porta 6379 para conexões de cliente.
+
+
+

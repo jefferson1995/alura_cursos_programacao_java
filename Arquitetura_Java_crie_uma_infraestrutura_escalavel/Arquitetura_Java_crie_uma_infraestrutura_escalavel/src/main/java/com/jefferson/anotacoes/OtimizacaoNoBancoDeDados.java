@@ -1,6 +1,6 @@
 package com.jefferson.anotacoes;
 
-public class PoolDeConexoes {
+public class OtimizacaoNoBancoDeDados {
 
     //Pool de conexão
 
@@ -59,7 +59,7 @@ public class PoolDeConexoes {
 //    Quando criamos o índice na migração do Flyway, a estrutura da tabela de ingressos ficaria da seguinte forma:
 //
 //    sql
-//    Copiar código
+//     
 //    CREATE TABLE ingressos (
 //            id BIGINT AUTO_INCREMENT PRIMARY KEY,
 //            evento_id BIGINT NOT NULL,
@@ -106,7 +106,7 @@ public class PoolDeConexoes {
 //    Consulta de busca: Se você fizer uma consulta que envolve uma busca por um valor em uma coluna indexada, como:
 //
 //    sql
-//    Copiar código
+//     
 //
 //    SELECT * FROM clientes WHERE cpf = '12345678900';
 //    O banco de dados pode usar o índice sobre a coluna cpf para localizar rapidamente a linha, em vez de percorrer todas as linhas da tabela.
@@ -114,7 +114,7 @@ public class PoolDeConexoes {
 //    Consultas com ORDER BY: Se você tiver um índice na coluna usada para ordenação, como:
 //
 //    sql
-//    Copiar código
+//     
 //    SELECT * FROM produtos ORDER BY preco;
 //    O banco de dados pode usar o índice para retornar os dados já ordenados, sem precisar ordenar as linhas manualmente após a leitura.
 //
@@ -122,13 +122,13 @@ public class PoolDeConexoes {
 //    Em bancos de dados relacionais como MySQL, PostgreSQL, Oracle, entre outros, um índice pode ser criado com a seguinte sintaxe SQL:
 //
 //    sql
-//    Copiar código
+//     
 //    CREATE INDEX nome_do_indice
 //    ON nome_da_tabela (coluna1, coluna2, ...);
 //    Por exemplo, para criar um índice na coluna cpf da tabela clientes:
 //
 //    sql
-//    Copiar código
+//     
 //
 //    CREATE INDEX idx_cpf ON clientes (cpf);
 //
@@ -138,7 +138,7 @@ public class PoolDeConexoes {
 //    Índice composto: É um índice que envolve múltiplas colunas. Pode ser usado quando você frequentemente faz consultas envolvendo várias colunas, como:
 //
 //    sql
-//    Copiar código
+//     
 //    CREATE INDEX idx_nome_data ON clientes (nome, data_cadastro);
 //    Índice full-text: Usado para buscas de texto completo, como quando você quer procurar palavras em colunas de texto grande (por exemplo, artigos ou posts).
 //
@@ -181,5 +181,117 @@ public class PoolDeConexoes {
 //    Ambos os comandos são excelentes ferramentas que podemos utilizar para analisar o desempenho de determinadas queries de nossa aplicação, nos auxiliando a identificar possíveis problemas que podem impactar a performance da aplicação.
 
 
+
+    //ORM E SQL
+
+//    Quando usamos frameworks como Spring Boot e JPA, eles abstraem o acesso ao banco de dados, então não precisamos mais escrever SQL manualmente.
+//    Isso pode ser perigoso, pois não sabemos exatamente o que o framework está fazendo internamente em termos de consultas ao banco.
+//    É importante habilitar os logs de SQL no application.properties para visualizar as consultas que estão sendo disparadas.
+//    No exemplo da aula, ao fazer uma requisição para listar as compras de um usuário, foram disparadas 7 consultas SQL diferentes no banco de dados.
+//    Isso pode ser um problema de performance, principalmente em ambientes de produção com muitos dados.
+//    Nem sempre é possível trazer todos os dados em uma única consulta, mas é importante tentar minimizar o número de idas ao banco de dados.
+//    Em desenvolvimento, pode parecer que tudo está funcionando bem, mas em produção, com mais dados, essas consultas podem ficar muito lentas.
+//    O conselho é sempre avaliar as consultas nos logs e pensar em otimizações, como melhorar os relacionamentos entre as entidades.
+//    O curso de Otimização de Aplicações Java na Alura aborda mais sobre como lidar com esses problemas de performance relacionados à persistência.
+
+
+
+
+    //Para saber mais: consultas com operador like
+
+
+//    No curso, aprendemos que algumas consultas SQL feitas pela aplicação podem causar problemas de performance, sendo crucial analisar as queries e realizar ajustes, se necessário. Especialmente quando se utiliza frameworks ORM, como o Hibernate e o Spring Data, que abstraem bastante o acesso ao banco de dados, gerando automaticamente as queries SQL.
+//
+//    Um exemplo comum de consulta que pode gerar problemas de performance são aquelas que utilizam o operador LIKE para filtrar por colunas do tipo VARCHAR. O operador LIKE é utilizado para buscar por padrões em strings, permitindo consultas flexíveis, mas pode ser custoso em termos de desempenho quando não utilizado de forma otimizada.
+//
+//    Problemas de performance com o operador LIKE
+//    Consultas que utilizam o operador LIKE podem enfrentar os seguintes problemas de performance:
+//
+//    Escaneamento de Tabela Completa
+//
+//    Quando uma consulta utiliza o LIKE, o banco de dados pode ser forçado a realizar um escaneamento completo da tabela para buscar todas as linhas que correspondem ao padrão especificado, o que pode ser extremamente lento em tabelas com grande volume de dados.
+//    Ausência de índices
+//
+//    Consultas com o operador LIKE podem não se beneficiar de índices existentes nas colunas, especialmente quando o padrão de busca começa com o caractere coringa %. Isso pode resultar em varreduras de tabela ineficientes.
+//    Otimização de consultas com operador LIKE
+//    Para otimizar consultas que utilizam o operador LIKE, podemos seguir estas práticas:
+//
+//    Utilizar prefixo adequado
+//
+//    Sempre que possível, evitar o uso do caractere coringa % no início do padrão de busca. Isso permite que o banco de dados utilize índices existentes para acelerar a busca.
+//    Usar índices de texto completo
+//
+//    Em bancos de dados que suportam índices de texto completo, considerar a utilização desses índices para consultas que envolvem operações de busca de texto.
+//    Limitar o escopo da consulta
+//
+//    Quando aplicável, limitar o escopo da consulta utilizando outras cláusulas de filtro para reduzir o número de linhas verificadas pelo operador LIKE.
+//    Uma outra alternativa eficaz é criar uma nova coluna no banco de dados que armazena uma versão concatenada das colunas que são alvo da pesquisa. Por exemplo, se estivermos buscando por padrões nas colunas nome e email, podemos criar uma nova coluna busca_nome_email que contém a concatenação dessas duas colunas:
+//
+//    ALTER TABLE tabela ADD busca_nome_email VARCHAR(255) AS (CONCAT(nome, ' ', email)) STORED;
+//     
+//    Após criar essa nova coluna, podemos então criar um índice nela para acelerar as consultas que utilizam o operador LIKE:
+//
+//    CREATE INDEX idx_busca_nome_email ON tabela(busca_nome_email);
+//     
+//    Com essa nova coluna e o índice associado, podemos reformular a consulta para buscar diretamente na coluna concatenada, aproveitando os benefícios do índice:
+//
+//    SELECT *
+//    FROM tabela
+//    WHERE busca_nome_email LIKE '%termo_buscado%';
+//    
+//    Essa abordagem pode resultar em ganhos significativos de desempenho, especialmente em tabelas grandes, onde o escaneamento completo das colunas originais seria muito custoso em termos de desempenho.
+//
+//    Em alguns casos, pode ser mais eficiente utilizar outras técnicas de busca, como busca textual, dependendo dos requisitos da aplicação.
+//
+//    Com essas práticas de otimização, podemos melhorar significativamente o desempenho de consultas SQL que utilizam o operador LIKE, garantindo uma melhor experiência para os usuários finais e evitando problemas de escalabilidade em aplicações com grande volume de dados.
+
+
+
+    //Para saber mais: réplica do banco para leitura
+
+//    Já aprendemos algumas otimizações para melhorar o desempenho do banco de dados; no entanto, existe uma alternativa comum adicional para melhorar a performance: configurar uma réplica do banco de dados que será utilizada exclusivamente para leitura.
+//
+//    O que é uma réplica para leitura?
+//    Uma réplica de banco de dados para leitura, também conhecida como réplica de leitura ou replicação de leitura, é uma cópia do banco de dados principal que é configurada especificamente para suportar operações de leitura, ou seja, consultas SQL utilizando a cláusula select.
+//
+//    Enquanto o banco de dados principal é responsável por lidar com operações de escrita, como inserções, atualizações e exclusões, a réplica de leitura é utilizada apenas para consultas de leitura, aliviando a carga do banco de dados principal e melhorando o desempenho geral do sistema.
+//
+//    Cenários de uso
+//    As réplicas de leitura são recomendadas em diversos cenários, incluindo:
+//
+//    Aplicações com alto volume de leitura
+//
+//    Em aplicações onde a maioria das operações são de leitura, como blogs, portais de notícias e aplicativos de análise, uma réplica de leitura pode distribuir a carga de consultas entre várias réplicas, melhorando o desempenho geral do sistema.
+//            Escalabilidade horizontal
+//
+//    Réplicas de leitura permitem escalar horizontalmente a capacidade de leitura do sistema, adicionando réplicas adicionais conforme necessário para lidar com aumentos de tráfego e carga.
+//    Relatórios e análises
+//
+//    Para aplicações que exigem relatórios e análises em tempo real de grandes conjuntos de dados, réplicas de leitura podem fornecer uma fonte dedicada para consultas analíticas sem afetar o desempenho das operações de escrita.
+//    Leitura em regiões geográficas distintas
+//
+//    Em aplicações distribuídas globalmente, réplicas de leitura podem ser configuradas em regiões geográficas distintas para reduzir a latência e melhorar a experiência do usuário final em diferentes localidades.
+//            Considerações importantes
+//    Ao configurar réplicas de leitura, é importante considerar:
+//
+//    Sincronização de dados: Assegurar que os dados nas réplicas de leitura estejam sempre sincronizados com o banco de dados principal.
+//
+//    Consistência dos dados: Garantir que as operações de leitura nas réplicas de leitura retornem dados consistentes e atualizados.
+//
+//    Overhead de manutenção: Realizar manutenção regular nas réplicas de leitura, incluindo monitoramento de desempenho, aplicação de patches e atualizações, e escalonamento conforme necessário.
+//
+//            Custo: Avaliar os custos associados à configuração e manutenção de réplicas de leitura, incluindo custos de hardware, armazenamento e largura de banda de rede.
+//
+//    Ao considerar esses aspectos, réplicas de leitura podem ser uma excelente ferramenta para melhorar o desempenho e a escalabilidade de aplicações baseadas em banco de dados, especialmente em ambientes de alta demanda e volume de dados.
+
+
+
     
+//    Nesta aula, você aprendeu:
+//    Que após realizar o deploy de uma aplicação em ambiente de produção é importante utilizar ferramentas de monitoramento, para acompanhar a saúde da aplicação e identificar possíveis problemas;
+//    Que, no geral, um ponto comum de apresentar problemas de performance em uma aplicação é no acesso ao banco de dados;
+//    O que é um pool de conexões e como configurar o pool de conexões em uma aplicação JAva que utiliza o Spring Boot;
+//    A criar índices em tabelas no banco de dados, para melhorar a performance em determinadas consultas que utilizam filtros;
+//    Que embora a utilização de frameworks ORM, com o Hibernate, e de bibliotecas que abstraem as consultas ao banco de dados, como o Spring Data, simplifique bastante a integração da aplicação com o banco de dados, é importante conhecer e analisar os comandos SQL sendo disparados automaticamente por tais ferramentas, para evitar problemas de performance.
+
 }

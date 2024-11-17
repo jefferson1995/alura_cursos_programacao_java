@@ -13,7 +13,7 @@ services:
       retries: 10  # Especifica que o container tentará 10 vezes antes de ser considerado inativo.
 
   app:
-    image: alura/user-infra:1.0
+    image: aula_java_infra-app:latest
     container_name: "user-infra-app"  # Define o nome do container como `user-infra-app`.
     env_file: ./env/app.env  # Carrega as variáveis de ambiente do arquivo `app.env` para configurar a aplicação.
     restart: unless-stopped  # Reinicia automaticamente o container da aplicação a menos que seja explicitamente parado.
@@ -23,5 +23,22 @@ services:
     ports:
       - "8087:8087"  # Mapeia a porta `8087` do host para a porta `8087` do container, permitindo o acesso à aplicação externamente.
 
+  nginx:
+    image: nginx  # Define a imagem do Docker que será usada para o serviço nginx. Neste caso, a imagem oficial do Nginx.
+    ports:
+      - "8080:8080"  # Mapeia a porta 8080 do container para a porta 8080 do host. Ou seja, as requisições na porta 8080 do host serão encaminhadas para a porta 8080 do container.
+    volumes:
+      - ./ngnix:/etc/ngnix/conf.d  # Monta um volume, mapeando o diretório local `./ngnix` para o diretório `/etc/ngnix/conf.d` no container. Isso permite personalizar os arquivos de configuração do Nginx localmente.
+    restart: unless-stopped  # Configura a política de reinício do container. O container será reiniciado automaticamente, exceto se for explicitamente parado.
+    depends_on:
+      - app  # Garante que o serviço `nginx` só será iniciado após o serviço `app` ter iniciado com sucesso.
+
+  redis:
+    image: redis:7.2.4  # Define a imagem do Redis a ser usada, especificando a versão 7.2.4.
+    restart: unless-stopped  # Configura a política de reinício do Redis, reiniciando automaticamente, a menos que o container seja explicitamente parado.
+    ports:
+      - "6379:6379"
+
 volumes:
-  postgres-data:  # Define um volume nomeado `postgres-data`, garantindo que os dados do banco sejam persistentes.
+    postgres-data:  # Define um volume nomeado `postgres-data`. Este volume será usado para armazenar os dados de um banco de dados PostgreSQL, garantindo persistência mesmo se o container for removido ou reiniciado.
+

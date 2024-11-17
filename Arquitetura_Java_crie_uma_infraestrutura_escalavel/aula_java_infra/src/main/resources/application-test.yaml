@@ -7,6 +7,9 @@ spring:
     password:
     platform: h2
     initialization-mode: always  # Garante que o H2 seja inicializado com um esquema de banco de dados
+  data:
+    redis:
+      port: 6379  # Define a porta do servidor Redis. O Redis, por padrão, usa a porta 6379 para conexões de cliente.
   h2:
     console:
       enabled: true
@@ -28,3 +31,4 @@ spring:
       all-methods: true
       all-headers: true
       send-credentials: true
+

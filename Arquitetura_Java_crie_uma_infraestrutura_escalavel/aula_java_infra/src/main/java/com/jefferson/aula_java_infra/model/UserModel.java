@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @Data
@@ -14,7 +15,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "tb_users")
-public class UserModel {
+public class UserModel implements Serializable {
+
+    //serializable: Define para um formato binario para guardar as info memoria (utilizado no redis) -> todas classes relacionadas precisa ter o serializable
 
     private static final long serialVersionUID = 1L;
 
