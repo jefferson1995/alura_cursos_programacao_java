@@ -22,18 +22,21 @@ services:
     depends_on:
       db:
         condition: service_healthy  # Define uma dependência com o serviço `db` (PostgreSQL), garantindo que ele esteja saudável antes de iniciar o container da aplicação.
-    expose:
+    ports:
       - "8087:8087"
   app-2:
       <<: *app
+      ports:
+        - "8088:8087"
 
   nginx:
     image: nginx  # Define a imagem do Docker que será usada para o serviço nginx. Neste caso, a imagem oficial do Nginx.
+    container_name: proxy
     ports:
-      - "8087:8087"  # Mapeia a porta 8080 do container para a porta 8080 do host. Ou seja, as requisições na porta 8080 do host serão encaminhadas para a porta 8080 do container.
+      - "8080:80"  # Mapeia a porta externa 8080 para a porta 80 do host. Ou seja, as requisições na porta 8080 do host serão encaminhadas para a porta 80 do container.
     volumes:
-      - ./nginx.conf:/etc/ngnix/ngnix.conf:ro  # Monta um volume, mapeando o diretório local `./ngnix` para o diretório `/etc/ngnix/conf.d` no container. Isso permite personalizar os arquivos de configuração do Nginx localmente.
-    restart: unless-stopped  # Configura a política de reinício do container. O container será reiniciado automaticamente, exceto se for explicitamente parado.
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro  # Monta um volume, mapeando o diretório local `./ngnix` para o diretório `/etc/ngnix/conf.d` no container. Isso permite personalizar os arquivos de configuração do Nginx localmente.
+    #restart: unless-stopped  # Configura a política de reinício do container. O container será reiniciado automaticamente, exceto se for explicitamente parado.
     depends_on:
       - app-1  # Garante que o serviço `nginx` só será iniciado após o serviço `app` ter iniciado com sucesso.
       - app-2
