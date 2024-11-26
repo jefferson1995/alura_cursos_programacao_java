@@ -16,8 +16,8 @@ public class Usuario {
 
     public Usuario(String cpf, String nome, LocalDate nascimento, String email) {
 
-        if(cpf == null || !cpf.matches("\\d{3}\\.\\d{3}\\.\\d{3}\\-\\d{2}")){
-            throw new IllegalArgumentException("CPF invalido");
+        if(cpf == null){
+            throw new IllegalArgumentException("CPF vazio");
         }
         int idade = Period.between(nascimento, LocalDate.now()).getYears();
 
