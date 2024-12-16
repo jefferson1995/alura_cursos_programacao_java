@@ -1,40 +1,53 @@
-# Apresentação
+var ambiente
 
-O objetivo principal é te ensinar Domain-Driven Design (DDD), 
-focando em criar aplicações realmente relevantes para o negócio, 
-indo além de simples operações CRUD.
-Vamos aprender a identificar regras de negócio, definir uma linguagem ubíqua (entendida por todos os envolvidos),
-modelar a aplicação e aplicar design estratégico e tático.
-É um curso ideal se você já conhece Clean Architecture e quer aprimorar seus conhecimentos em arquitetura de software com foco em DDD. 
-Prepare-se para mergulhar no mundo do DDD e construir aplicações robustas e significativas!
+-DDB_USER=postgres <br>
+-DDB_PASSWORD=123456 <br>
+-DDB_HOST=localhost <br>
+-DDB_PORT=5432 <br>
 
-## Entendendo o projeto?
+# Linguagem ubíqua
 
-Essa aula foi uma introdução ao curso de Arquitetura Java com Domain-Driven Design, usando o projeto CodeChella como exemplo. Vimos que, diferente do curso de Clean Architecture, aqui vamos trabalhar com a aplicação completa do CodeChella, um site de venda de ingressos para eventos.
+Aprendemos sobre a importância da Linguagem Ubíqua no Domain-Driven Design. 
+Basicamente, é sobre a necessidade de todos falarem a mesma língua, desde o time de negócios até os desenvolvedores. 
+Usamos o exemplo do projeto CodeChella, onde a classe Formato no código representava o que, no negócio, era chamado de Setor.
+Refatoramos o código, renomeando a classe e todas as suas referências, para garantir a consistência da linguagem. 
+Vimos na prática como isso impacta o código, as mensagens de erro, o banco de dados (com o auxílio do JPA e o ddl-auto=update) e até mesmo a API, que precisa ser atualizada para refletir a mudança. O
+objetivo é garantir que a linguagem usada em todas as partes do projeto seja a mesma que o negócio utiliza, facilitando a comunicação e a compreensão do sistema. 
+Foi um processo que envolveu renomear classes, atualizar getters e setters, e verificar cuidadosamente todas as ocorrências da palavra antiga para garantir que a mudança fosse completa. 
+No final, conseguimos cadastrar um evento no Postman usando o nome correto, "setor", no JSON.
 
-Analisamos o diagrama de classes, mostrando as entidades Evento, Tipo de Ingresso, Ingresso, Usuário e Venda, e como elas se relacionam. Usamos o Postman para interagir com a API, fazendo posts para cadastrar usuários, eventos e vendas. Vimos exemplos de como cadastrar cada um desses itens via JSON.
+Para saber mais: usando uma linguagem onipresente: https://drive.google.com/file/d/1ch2LzMXBsfg2V_NRBoqJHdVS1RJYAKXM/view?usp=drive_link
 
-A parte principal da aula focou na diferença de abordagem entre a programação orientada a CRUD (criação, leitura, atualização e deleção) e o Domain-Driven Design (DDD). A programação orientada a CRUD se concentra na persistência de dados e na geração de relatórios, enquanto o DDD prioriza a modelagem do negócio e suas regras. O curso se concentrará em entender as necessidades do negócio e como traduzi-las em código, em vez de focar apenas na parte técnica da persistência de dados. Ficou claro que o foco será em entender o negócio antes de pensar na tecnologia.
+## Classes anêmicas
 
-Preparando o ambiente: executando o projeto inicial: https://drive.google.com/file/d/1HKqU-xofRQLHBVHqnkgli-YdsCXl17b_/view?usp=drive_link
+Aprendemos sobre as armadilhas das "classes anêmicas" em Domain-Driven Design (DDD). Elas são aquelas classes que só possuem getters e setters, sem nenhuma regra de negócio, sem um "motivo para mudar". Isso é um problema porque, em DDD, o foco é modelar o domínio do negócio, com suas regras e comportamentos.
 
-Para saber mais: Domain-Driven Design: https://drive.google.com/file/d/1gi-I2cUe2LlRC5F98H-2at3AFmlizAlA/view?usp=drive_link
+Criamos um pacote dominio (ou domain) para organizar nossas classes de domínio,
+e dentro dele, classes como Evento e Endereco, representando o nosso negócio, 
+sem se preocupar com o banco de dados. Vimos que, ao invés de usar apenas setters para modificar os atributos de um Evento, 
+podemos criar métodos como incluiNovoTipoDeIngressoAoEvento e aumentaNumeroDeIngressosPorTipo, que encapsulam regras de negócio e dão à classe um propósito além de simplesmente armazenar dados.
+Isso torna o código mais robusto, mais fácil de manter e mais alinhado com os princípios do DDD. 
+O principal aprendizado é que classes de domínio devem ter comportamentos e regras, não apenas dados!
 
-## Desvendando a complexidade do software
+Para saber mais: complexidade de domínio e complexidade acidental: https://drive.google.com/file/d/16L40x8JnhZbIUgkIwgAFFAC5B4hSmhPt/view?usp=drive_link
 
-importância de atacar a complexidade essencial no desenvolvimento de software, que é a complexidade do negócio. A complexidade acidental, como dívidas técnicas e problemas de infraestrutura, também existem, mas o foco principal do Domain-Driven Design (DDD) é resolver os problemas do negócio, a razão pela qual o software está sendo criado.
+## Subdomínios e contextos delimitados
 
-Vimos que não existe uma solução única para todos os problemas, pois cada negócio tem suas particularidades. 
-Usamos o exemplo do CodeChella para ilustrar como diferentes setores (vendas, customer success, financeiro e B2B) podem ter diferentes nomes e abordagens para os mesmos conceitos (cliente, produto, etc.). 
-Isso demonstra a necessidade de um profundo entendimento do domínio do negócio para criar um software eficaz. 
-A aula nos preparou para explorar os pilares do DDD que nos ajudarão a modelar aplicações que realmente atendam às necessidades do cliente.
+Aprendemos sobre Design Estratégico no DDD, que basicamente é a arte de dividir um grande negócio em partes menores e mais fáceis de gerenciar. Começamos entendendo a importância de identificar o domínio principal – a parte do negócio que gera receita e justifica o desenvolvimento do software. Para a CodeChella, por exemplo, é a venda de ingressos.
 
+Depois, exploramos os subdomínios: o principal (venda de ingressos, no nosso caso), os genéricos (que podem ser terceirizados, como a plataforma de pagamento) e os de suporte (importantes, mas não centrais, como o cadastro de usuários). Usamos um fluxograma para decidir a categoria de cada subdomínio, baseado em se a solução pode ser comprada e se a lógica de negócio é complexa.
+
+Por fim, falamos sobre Contextos Delimitados (Bounded Contexts), que são como "caixinhas" onde organizamos esses subdomínios no nosso software, seja em módulos ou pacotes separados. Tudo isso para manter o foco no que realmente importa e construir um sistema mais organizado e eficiente!
+
+saber mais: https://drive.google.com/file/d/1JTVta2A9_RYOePY0QO8kHli-cngnQdUT/view?usp=drive_link
 
 ### Nessa aula, você aprendeu:
 
-- Teve uma visão geral sobre o que é Domain-Driven Design e sua importância no desenvolvimento de software;
-- Aprendeu como uma modelagem de domínio eficaz pode ajudar a refletir as necessidades do negócio no design do software.
+- Conheceu o termo Linguagem Ubíqua, que consiste em ter uma linguagem onipresente entre a equipe de desenvolvimento e a equipe de negócios;
 
+- Entendeu o que compõe o domínio e os subdomínios, classificando-os em principal, genérico ou de suporte;
+
+- Aprendeu sobre os contextos delimitados (ou "Bounded Contexts") e como o uso dessa abordagem pode facilitar o design estratégico da aplicação.
 
 ```bash
 
@@ -42,7 +55,6 @@ A aula nos preparou para explorar os pilares do DDD que nos ajudarão a modelar 
 
 
 # Autor/Professor
-
 Jacqueline Oliveira
 https://cursos.alura.com.br/course/arquitetura-java-aplicacoes-domain-driven-design
 
