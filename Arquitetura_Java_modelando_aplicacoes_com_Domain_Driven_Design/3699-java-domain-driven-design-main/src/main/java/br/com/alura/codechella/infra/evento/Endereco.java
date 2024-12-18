@@ -1,15 +1,20 @@
-package br.com.alura.codechella.dominio.evento;
+package br.com.alura.codechella.infra.evento;
 
+import br.com.alura.codechella.aplicacao.evento.DadosEndereco;
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class Endereco {
-
     private String cep;
     private Integer numero;
     private String complemento;
 
-    public Endereco(String cep, Integer numero, String complemento) {
-        this.cep = cep;
-        this.numero = numero;
-        this.complemento = complemento;
+    public Endereco() {}
+
+    public Endereco(DadosEndereco dados) {
+        this.cep = dados.cep();
+        this.numero = dados.numero();
+        this.complemento = dados.complemento();
     }
 
     public String getCep() {
@@ -34,11 +39,5 @@ public class Endereco {
 
     public void setComplemento(String complemento) {
         this.complemento = complemento;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Cep: %s, número %s - complemento %s",
-                cep, numero, complemento);
     }
 }
