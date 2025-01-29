@@ -34,6 +34,7 @@ public class Paciente {
 
     @Transient
     public List<Consulta> consultas;
+
     public Paciente(DadosCadastroPaciente dados) {
         this.ativo = true;
         this.nome = dados.nome();
