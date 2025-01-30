@@ -3,16 +3,16 @@ package med.voll.api.controller;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import med.voll.api.domain.consulta.AgendaDeConsultas;
-import med.voll.api.domain.consulta.Consulta;
 import med.voll.api.domain.consulta.DadosAgendamentoConsulta;
 import med.voll.api.domain.consulta.DadosCancelamentoConsulta;
 import med.voll.api.domain.consulta.DadosDetalhamentoConsulta;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("consultas")
@@ -23,8 +23,8 @@ public class ConsultaController {
     private AgendaDeConsultas agenda;
 
     @GetMapping
-    public ResponseEntity<List<DadosDetalhamentoConsulta>> listar(){
-        return ResponseEntity.ok(agenda.listar()) ;
+    public ResponseEntity<Page<DadosDetalhamentoConsulta>> listar(@PageableDefault(size = 10, sort = {"paciente"}) Pageable paginacao){
+        return ResponseEntity.ok(agenda.listar(paginacao));
     }
 
     @PostMapping
