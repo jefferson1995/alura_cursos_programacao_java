@@ -17,10 +17,9 @@ public class CadastroDePedido {
     public static void main(String[] args) {
 
         popularBancoDeDados();
-
-
-
         EntityManager em = JPAUtil.getEntityManager();
+
+
         ProdutoDao produtoDao = new ProdutoDao(em);
         Produto produto = produtoDao.buscarPorId(1l);
         Produto produto2 = produtoDao.buscarPorId(2l);
@@ -43,6 +42,10 @@ public class CadastroDePedido {
         pedidoDao.cadastrar(pedido2);
 
         em.getTransaction().commit();
+
+        Pedido pedidoData = pedidoDao.buscarPedidoComCliente(cliente.getId());
+
+        System.out.println("JBS ------------------------------ " + pedidoData.getCliente().getNome());
 
         System.out.println("VALOR TOTAL: " + pedidoDao.valorTotalVendido());
 
