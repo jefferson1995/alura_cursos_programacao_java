@@ -10,6 +10,8 @@ import javax.persistence.*;
 @Entity
 @Table(name = "produtos")
 @NamedQuery(name = "Produto.produtosPorCategoria", query = "SELECT p FROM Produto p WHERE p.categoria.nome = :nome")
+//@Inheritance(strategy = InheritanceType.SINGLE_TABLE) -> Tabelão com todos atributos e dtype do tipo que foi salvo
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Produto {
 
 	@Id
