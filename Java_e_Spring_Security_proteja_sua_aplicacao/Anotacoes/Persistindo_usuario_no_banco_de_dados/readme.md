@@ -1,59 +1,93 @@
-# Criando a tabela de usuários
+# Preparando o ambiente: dependência, dialeto e código utilizados em vídeo
 
-link preparar ambiente: https://drive.google.com/file/d/1xWscNy4JS_e2Ev7MhUHvwL0FKJgCJ5Cv/view?usp=drive_link
+Para facilitar nosso desenvolvimento e ritmo, inserimos alguns códigos prontos na nossa aplicação ao longo dos vídeos desta aula. Assim, disponibilizamos abaixo todos os códigos utilizados nos próximos vídeos para que você possa acompanhar junto com a instrutora.
 
-link resumo aula: https://drive.google.com/file/d/1Ru1cdCjqEZNwhGH1hG88R6ZoGkmcbj8g/view?usp=drive_link
+Quando quiser copiar o código, volte a esta atividade para consultá-los! :)
 
-# Configurando a busca de usuários
+Dependência do Thymeleaf Extras e dialeto para uso no arquivo HTML
+Para adicionar o pacote thymeleaf-extras-springsecurity6 ao projeto, você pode inserir a seguinte dependência do Thymeleaf Extras utilizada no vídeo “Ajustando permissões de visualização”:
 
-Nesta aula, aprendemos sobre como persistir usuários no banco de dados e configurar a busca de usuários utilizando o Spring Security.
+```bash
 
-Primeiro, inserimos dois usuários, João e Maria, na tabela usuários do MySQL. Em seguida, criamos uma interface chamada UsuarioRepository, que estende JpaRepository, para facilitar a interação com a tabela. Implementamos um método de busca chamado findByEmailIgnoreCase, que permite encontrar um usuário pelo e-mail, ignorando maiúsculas e minúsculas.
+<dependency>
+    <groupId>org.thymeleaf.extras</groupId>
+    <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+</dependency>
 
-Depois, integramos essa busca ao Spring Security criando a classe UsuarioService, que implementa a interface UserDetailsService. Nela, configuramos o método loadUserByUsername() para buscar o usuário usando o repositório. Para tornar a busca mais segura, alteramos o método no repositório para retornar um Optional<Usuario>, permitindo o uso de uma exceção personalizada caso o usuário não seja encontrado.
+```
 
-Por fim, discutimos a necessidade de ajustar a configuração do Spring Security para utilizar as informações do banco de dados em vez de dados em memória.
+Agora, para inserir o dialeto a ser importado no arquivo HTML utilizado neste vídeo, copie o seguinte código:
 
-# Alterando a validação dos usuários
+```bash
 
-a persistência de usuários no banco de dados e como alterar a validação dos usuários em uma aplicação Spring Security.
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 
-Primeiro, revisamos a classe ConfiguracoesSeguranca, onde identificamos que o UserDetailsService estava salvando os usuários em memória, o que não era mais desejado. Para resolver isso, decidimos remover o método dadosUsuariosCadastrados().
+```
 
-Em seguida, focamos na classe UsuarioService, que foi anotada com @Service. Isso transformou a classe em um @Bean, permitindo que o Spring gerenciasse essa classe como um UserDetailsService.
+Código do “Olá, usuário”
+Para exibir o nome do usuário após o login, ação implementada no vídeo “Visualizando o nome do usuário”, utilize o código a seguir:
 
-Após essas modificações, ao executar a aplicação e tentar fazer login com um usuário, encontramos uma exceção relacionada à falta de um PasswordEncoder. A mensagem de erro indicava que a senha não estava codificada e sugeria o uso do prefixo noop, mas isso não é a melhor prática.
+```bash
 
-Por fim, a aula nos preparou para entender como funciona o PasswordEncoder e como configurá-lo na classe de segurança para garantir a proteção adequada das senhas dos usuários.
+<ul class="nav-right">
+                <li class="dropdown">
+                    <a href="#">OLÁ, USUÁRIO <i class="arrow-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <form class="navbar-form" th:action="@{/logout}" method="post">
+                                <button class="btn-link">SAIR</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+      </ul>
+
+```
+
+# Ajustando permissões de visualização
+
+Nesta aula, aprendemos a integrar o Thymeleaf com o Spring Security para ajustar as permissões de visualização na nossa aplicação web. O foco foi ocultar o menu de navegação para usuários não autenticados, evitando que eles fossem redirecionados para a página de login ao tentarem acessar áreas restritas.
+
+Para isso, adicionamos a dependência thymeleaf-extras-springsecurity6 no arquivo pom.xml, que permite a utilização de funcionalidades do Spring Security no Thymeleaf. Em seguida, no arquivo template.html, utilizamos a tag sec:authorize="isAuthenticated" para exibir o menu apenas para usuários autenticados. Também foi necessário importar o namespace correto do Thymeleaf.
+
+Após compilar e reiniciar a aplicação, verificamos que o menu só aparece quando o usuário está logado, melhorando a experiência do usuário e a segurança da aplicação.
+
+Por fim, a aula nos preparou para adicionar novas funcionalidades no front-end.
 
 
-# Utilizando um codificador de senha
+# Visualizando o nome do usuário
 
-aprendemos sobre a importância de proteger as senhas dos usuários em uma aplicação web utilizando o Spring Security.
+Nesta aula, aprendemos a integrar o Thymeleaf ao Spring Security para exibir uma saudação personalizada ao usuário logado em nossa aplicação web. Começamos ajustando o menu de usuário no arquivo _menu.html, onde adicionamos a opção "Olá, usuário" e um botão para sair.
 
-Iniciamos entendendo que armazenar senhas em texto simples no banco de dados representa uma vulnerabilidade, pois, em caso de vazamento, as senhas podem ser facilmente acessadas. Para resolver isso, utilizamos a criptografia de senhas, e uma das formas mais comuns é o Bcrypt.
+Para personalizar a saudação, substituímos "usuário" por uma tag span que utiliza o dialeto do Thymeleaf com Spring Security, especificamente a expressão sec:authentication="principal.nome", que busca o nome do usuário autenticado.
 
-Vimos como gerar um hash da senha usando o site bcrypt.online e como atualizar a tabela de usuários no banco de dados com a senha criptografada. Após isso, discutimos como implementar um PasswordEncoder na classe ConfiguracoesSeguranca, que é responsável por codificar as senhas durante o processo de login.
+No entanto, encontramos um erro ao tentar acessar principal.nome, pois a classe Usuario não possuía um método getNome. Para resolver isso, implementamos o método getNome na classe Usuario, permitindo que o Spring Security reconhecesse essa propriedade.
 
-Por fim, testamos o login na aplicação, confirmando que o PasswordEncoder funcionou corretamente, permitindo que os usuários se autenticarem sem precisar inserir a senha criptografada.
+Após as correções, ao logar na aplicação, a saudação foi exibida corretamente, mostrando o nome do usuário. A aula também destacou a possibilidade de adicionar mais funcionalidades, como exibir uma foto de perfil e explorar a criação de perfis e autorização no futuro.
 
-A aula concluiu com a promessa de evoluir a parte visual da aplicação na próxima etapa, integrando o Thymeleaf com o Spring Security. Se precisar de mais detalhes ou tiver dúvidas, estou aqui para ajudar!
 
-Para saber mais: explicitando as configurações de segurança: https://drive.google.com/file/d/1ZRpWzktkmzbUvGO-lJ_T8e4CDBDKC20V/view?usp=drive_link
+saber mais: https://drive.google.com/file/d/1Y4Atksmi2Ttfz8fE7dC1ks9e6t2oroFk/view?usp=drive_link
 
-Para saber mais: como o BCrypt funciona por baixo dos panos?: https://drive.google.com/file/d/1J0a2IuuneETcsXqUhtSkU38Ecj-anX04/view?usp=drive_link
+
+alterando layout do menu: https://drive.google.com/file/d/1SVJfP-7A7PuNHHaT5guOdvD9ohovsC8U/view?usp=drive_link
+
+
+Referências: https://drive.google.com/file/d/1GNRah1GqbauzTmhN_nEWr_04WSeHfhXQ/view?usp=drive_link
+
+
 
 
 
 ### Nessa aula, você aprendeu:
 
-- Que é melhor armazenarmos os dados de usuários em um banco de dados. Dessa forma, o gerenciamento e a escalabilidade se tornam mais fáceis.
+- Integrar Thymeleaf e Spring Security. Isso foi feito adicionando a dependência thymeleaf-extras-springsecurity6 no pom.xml e usando o dialeto de segurança do Thymeleaf em arquivos HTML.
 
-- A implementar corretamente as interfaces fornecidas pelo Spring Security. Criamos nossas próprias implementações de UserDetails e UserDetailsService, indicando para o Spring como ele deveria trabalhar.
+- Usar a tag sec:authorize="isAuthenticated()" para controlar a visualização de elementos no template HTML.
 
-- A utilizar injeção de dependência no UsuarioService para acessar o repositório. Usamos a anotação @Service para transformar a classe em um bean.
+- Personalizar a exibição do nome do usuário autenticado no menu com Thymeleaf e Spring Security. Essa personalização é feita com a tag sec:authentication=”principal.nome”.
 
-- A necessidade de configurar um PasswordEncoder para criptografar senhas. Criptografamos as senhas dos usuários no banco e adicionamos o BCryptPasswordEncoder para lidar com as senha criptografadas.
+- Criar métodos de acesso no UserDetails para a correta integração com Spring Security. Entendemos que o principal da tag se refere ao usuário logado com o Spring Security, que é definido por um UserDetails. Logo, para utilizar as propriedades do principal, temos que ter essa propriedade no usuário, e ela deve ser acessível (por exemplo, devemos ter um getNome()).
+
 
 ```bash
 

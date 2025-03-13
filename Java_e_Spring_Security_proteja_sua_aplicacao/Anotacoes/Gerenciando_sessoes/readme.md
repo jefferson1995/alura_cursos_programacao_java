@@ -46,7 +46,7 @@ Link: https://drive.google.com/file/d/1H4-X2hohMvCxgLu0-UkqArtfFdBTRmju/view?usp
 Para saber mais: Spring Security e gerenciamento de tokens CSRF: https://drive.google.com/file/d/1YSn_aGLiQzTFMBtQBBiFAcTXgnRy5FUK/view?usp=drive_link
 
 
-
+05. Integrando o Thymeleaf ao Spring Security
 ### Nessa aula, você aprendeu:
 
 - O fluxo entre login e logout. Quando fazemos login, criamos uma sessão, e quando fazemos logout, precisamos limpá-la.
